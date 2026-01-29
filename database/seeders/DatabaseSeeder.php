@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,11 +11,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->command->info('Iniciando seeding de la base de datos...');
+        
+        // Orden de ejecución: primero tablas independientes, luego dependientes
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+            InstitucionesSeeder::class,
+            TiposEventoSeeder::class,
+            DependenciasSeeder::class,
         ]);
+
+        $this->command->info('Seeding completado exitosamente.');
+        $this->command->newLine();
+        $this->command->info('Credenciales del administrador:');
+        $this->command->info('Email: admin@cucsh.udg.mx');
+        $this->command->info('Contraseña: admin123');
+        $this->command->warn('IMPORTANTE: Cambia la contraseña después del primer login.');
     }
 }
