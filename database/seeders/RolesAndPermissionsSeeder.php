@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -18,7 +19,6 @@ class RolesAndPermissionsSeeder extends Seeder
         // Limpiar cache de permisos
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Crear permisos siguiendo el patrón recurso.acción
         $permissions = [
             // Eventos
             'eventos.ver',
@@ -34,7 +34,9 @@ class RolesAndPermissionsSeeder extends Seeder
             
             // Catálogos
             'catalogos.ver',
+            'catalogos.crear',
             'catalogos.editar',
+            'catalogos.eliminar',
             
             // Reportes
             'reportes.ver',
@@ -63,6 +65,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $consultorRole->syncPermissions([
             'eventos.ver',
             'reportes.ver',
+            'catalogos.ver',
             'reportes.generar',
         ]);
 
@@ -76,6 +79,28 @@ class RolesAndPermissionsSeeder extends Seeder
         );
         $admin->assignRole('administrador');
 
-        $this->command->info('Roles y permisos creados exitosamente.');
+        $editor = User::firstOrCreate(
+            ['email' => 'editor@cucsh.udg.mx'],
+            [
+                'name' => 'Editor CUCSH',
+                'password' => Hash::make('editor123'),
+            ]
+        );
+        $editor->assignRole('editor');
+
+        // Crear usuario consultor de prueba
+        $consultor = User::firstOrCreate(
+            ['email' => 'consultor@cucsh.udg.mx'],
+            [
+                'name' => 'Consultor CUCSH',
+                'password' => Hash::make('consultor123'),
+            ]
+        );
+        $consultor->assignRole('consultor');
+
+        echo "\n=== Usuarios de prueba creados ===\n";
+        echo "Administrador: admin@cucsh.udg.mx / admin123\n";
+        echo "Editor: editor@cucsh.udg.mx / editor123\n";
+        echo "Consultor: consultor@cucsh.udg.mx / consultor123\n";
     }
 }
